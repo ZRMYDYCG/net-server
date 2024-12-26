@@ -3,13 +3,15 @@ using System.Collections.Generic;
 
 namespace net_server.Models;
 
-public partial class Jobdetail
+public partial class Job
 {
     public int JobId { get; set; }
 
     public string JobTitle { get; set; } = null!;
 
-    public int NumberOfOpenings { get; set; }
+    public string? Department { get; set; }
+
+    public int? NumberOfOpenings { get; set; }
 
     public string Salary { get; set; } = null!;
 

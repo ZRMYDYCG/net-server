@@ -19,9 +19,7 @@ public partial class GegeDbContext : DbContext
 
     public virtual DbSet<Banner> Banners { get; set; }
 
-    public virtual DbSet<Jobdetail> Jobdetails { get; set; }
-
-    public virtual DbSet<Joblisting> Joblistings { get; set; }
+    public virtual DbSet<Job> Jobs { get; set; }
 
     public virtual DbSet<New> News { get; set; }
 
@@ -73,26 +71,33 @@ public partial class GegeDbContext : DbContext
                 .HasColumnName("subtitle");
         });
 
-        modelBuilder.Entity<Jobdetail>(entity =>
+        modelBuilder.Entity<Job>(entity =>
         {
             entity.HasKey(e => e.JobId).HasName("PRIMARY");
 
-            entity.ToTable("jobdetails");
+            entity.ToTable("job");
 
-            entity.Property(e => e.JobTitle).HasMaxLength(255);
-            entity.Property(e => e.Qualifications).HasColumnType("text");
-            entity.Property(e => e.Responsibilities).HasColumnType("text");
-            entity.Property(e => e.Salary).HasMaxLength(255);
-        });
-
-        modelBuilder.Entity<Joblisting>(entity =>
-        {
-            entity.HasKey(e => e.JobId).HasName("PRIMARY");
-
-            entity.ToTable("joblistings");
-
-            entity.Property(e => e.Department).HasMaxLength(255);
-            entity.Property(e => e.JobTitle).HasMaxLength(255);
+            entity.Property(e => e.JobId).ValueGeneratedNever();
+            entity.Property(e => e.Department)
+                .HasMaxLength(100)
+                .UseCollation("utf8mb3_general_ci")
+                .HasCharSet("utf8mb3");
+            entity.Property(e => e.JobTitle)
+                .HasMaxLength(100)
+                .UseCollation("utf8mb3_general_ci")
+                .HasCharSet("utf8mb3");
+            entity.Property(e => e.Qualifications)
+                .HasMaxLength(255)
+                .UseCollation("utf8mb3_general_ci")
+                .HasCharSet("utf8mb3");
+            entity.Property(e => e.Responsibilities)
+                .HasMaxLength(255)
+                .UseCollation("utf8mb3_general_ci")
+                .HasCharSet("utf8mb3");
+            entity.Property(e => e.Salary)
+                .HasMaxLength(50)
+                .UseCollation("utf8mb3_general_ci")
+                .HasCharSet("utf8mb3");
         });
 
         modelBuilder.Entity<New>(entity =>
