@@ -16,11 +16,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContextPool<GegeDbContext>(optionsBuilder => optionsBuilder.UseMySql(config.GetConnectionString("ConnectionString"), new MySqlServerVersion(new Version(8, 0, 34)), mySqlOptions =>
-{
-    mySqlOptions.MigrationsAssembly("net-server.API");
-}
-), poolSize: 5);
+// 配置数据库上下文
+builder.Services.AddDbContext<GegeDbContext>(options =>
+    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version(8, 0, 34))));
 
 #endregion
 
