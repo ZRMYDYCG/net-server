@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using net_server.Models;
+using System.Threading.Tasks;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace net_server.Controllers
 {
@@ -7,27 +10,50 @@ namespace net_server.Controllers
     [Route("api/[controller]")]
     public class AboutController : Controller
     {
-        private static About companyInfo = new About
-        {
-            AboutId = 1,
-            CompanyIntroduction = "Default Introduction",
-            ProductCount = 0,
-            EmployeeCount = 0,
-            WorkshopCount = 0
-        };
+        private readonly GegeDbContext _context;
 
-        [HttpGet("company-info")]
-        public ActionResult<About> GetCompanyInfo()
+        public AboutController(GegeDbContext context)
         {
+            _context = context;
+        }
+
+        /// <summary>
+        /// 获取公司信息
+        /// </summary>
+        /// <returns>返回公司信息</returns>
+        [HttpGet("company-info")]
+        [SwaggerOperation(Summary = "获取公司信息", Description = "返回公司信息")]
+        [SwaggerResponse(200, "成功获取公司信息", typeof(About))]
+        public async Task<ActionResult<About>> GetCompanyInfo()
+        {
+            var companyInfo = await _context.Abouts.FirstOrDefaultAsync();
+            if (companyInfo == null)
+            {
+                return NotFound("Company information not found.");
+            }
             return Ok(companyInfo);
         }
 
+        /// <summary>
+        /// 更新公司信息
+        /// </summary>
+        /// <param name="updatedInfo">更新后的公司信息</param>
+        /// <returns>返回更新结果</returns>
         [HttpPut("company-info")]
-        public ActionResult UpdateCompanyInfo([FromBody] About updatedInfo)
+        [SwaggerOperation(Summary = "更新公司信息", Description = "更新公司信息")]
+        [SwaggerResponse(204, "成功更新公司信息")]
+        [SwaggerResponse(400, "更新信息为空")]
+        public async Task<ActionResult> UpdateCompanyInfo([FromBody] About updatedInfo)
         {
             if (updatedInfo == null)
             {
                 return BadRequest("Updated information is null.");
+            }
+
+            var companyInfo = await _context.Abouts.FirstOrDefaultAsync();
+            if (companyInfo == null)
+            {
+                return NotFound("Company information not found.");
             }
 
             companyInfo.CompanyIntroduction = updatedInfo.CompanyIntroduction;
@@ -35,7 +61,11 @@ namespace net_server.Controllers
             companyInfo.EmployeeCount = updatedInfo.EmployeeCount;
             companyInfo.WorkshopCount = updatedInfo.WorkshopCount;
 
+            _context.Abouts.Update(companyInfo);
+            await _context.SaveChangesAsync();
+
             return NoContent();
         }
     }
 }
+
