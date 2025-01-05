@@ -19,7 +19,7 @@ namespace net_server.Controllers
         }
 
         [HttpGet("listings")]
-        public async Task<ActionResult<IEnumerable<object>>> GetJobListings(int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<object>> GetJobListings(int pageNumber = 1, int pageSize = 10)
         {
             var jobListings = await _context.Jobs
                 .OrderBy(j => j.JobId)
@@ -28,7 +28,12 @@ namespace net_server.Controllers
                 .Select(j => new { j.JobTitle, j.JobId })
                 .ToListAsync();
 
-            return Ok(jobListings);
+            var response = new
+            {
+                data = jobListings
+            };
+
+            return Ok(response);
         }
 
         [HttpGet("{id}")]

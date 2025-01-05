@@ -8,7 +8,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace net_server.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]")]   
     public class BannerController : Controller
     {
         private readonly GegeDbContext _context;
@@ -28,7 +28,7 @@ namespace net_server.Controllers
         public async Task<ActionResult<IEnumerable<Banner>>> GetBanners()
         {
             var banners = await _context.Banners.ToListAsync();
-            return Ok(banners);
+            return Ok(new { data = banners });
         }
 
         /// <summary>

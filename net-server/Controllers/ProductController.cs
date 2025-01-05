@@ -20,17 +20,28 @@ namespace net_server.Controllers
             _context = context;
         }
 
-        // 查询所有分类
+        // 查询所有分类以及该分下的产品
         [HttpGet("categories")]
         public async Task<ActionResult<IEnumerable<ProductsCategory>>> GetCategories()
         {
-            return await _context.ProductsCategories
-                .Select(c => new ProductsCategory
+            var categories = await _context.ProductsCategories
+                .Include(c => c.Products)
+                .Select(c => new
                 {
-                    CategoryId = c.CategoryId,
-                    CategoryName = c.CategoryName
+                    c.CategoryId,
+                    c.CategoryName,
+                    Products = c.Products.Select(p => new
+                    {
+                        p.ProductId,
+                        p.ProductName,
+                        p.Subtitle,
+                        p.Description,
+                        p.ProductImage
+                    }).ToList()
                 })
                 .ToListAsync();
+
+            return Ok(new { data = categories });
         }
 
         // 新建分类
@@ -39,7 +50,7 @@ namespace net_server.Controllers
         {
             _context.ProductsCategories.Add(category);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetCategories), new { id = category.CategoryId }, category);
+            return CreatedAtAction(nameof(GetCategories), new { id = category.CategoryId }, new { data = category });
         }
 
         // 删除分类
@@ -61,7 +72,7 @@ namespace net_server.Controllers
         [HttpGet("categories/search")]
         public async Task<ActionResult<IEnumerable<ProductsCategory>>> SearchCategories(string name)
         {
-            return await _context.ProductsCategories
+            var categories = await _context.ProductsCategories
                 .Where(c => c.CategoryName.Contains(name))
                 .Select(c => new ProductsCategory
                 {
@@ -69,6 +80,8 @@ namespace net_server.Controllers
                     CategoryName = c.CategoryName
                 })
                 .ToListAsync();
+
+            return Ok(new { data = categories });
         }
 
         // 分页查询产品列表
@@ -101,7 +114,7 @@ namespace net_server.Controllers
                 WriteIndented = true
             };
 
-            return new JsonResult(response, options);
+            return new JsonResult(new { data = response }, options);
         }
 
         // 查询某个产品详情
@@ -125,7 +138,7 @@ namespace net_server.Controllers
                 WriteIndented = true
             };
 
-            return new JsonResult(product, options);
+            return new JsonResult(new { data = product }, options);
         }
     }
 }

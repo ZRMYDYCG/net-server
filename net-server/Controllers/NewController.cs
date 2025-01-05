@@ -26,7 +26,7 @@ namespace net_server.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
-            return Ok(news);
+            return Ok(new { data = news });
         }
 
         // GET: api/New/5
@@ -40,7 +40,8 @@ namespace net_server.Controllers
                 return NotFound();
             }
 
-            return Ok(newsItem);
+            return Ok(new { data = newsItem });
         }
     }
 }
+

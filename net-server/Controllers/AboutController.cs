@@ -31,7 +31,7 @@ namespace net_server.Controllers
             {
                 return NotFound("Company information not found.");
             }
-            return Ok(companyInfo);
+            return Ok(new { data = companyInfo });
         }
 
         /// <summary>
@@ -68,4 +68,5 @@ namespace net_server.Controllers
         }
     }
 }
+
 
